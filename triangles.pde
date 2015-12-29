@@ -1,4 +1,4 @@
-Triangle t;
+Triangle[] triangles = new Triangle[20];
 int score;
 
 int keyReleasedCode = 0;
@@ -9,21 +9,16 @@ String[] directions = {"left", "right", "up", "down"};
 void setup()
 {
     size(640, 360);
-    t = new Triangle(width / 2, height / 2, "orange", "right", "right");
+    generateTriangles();
     score = 0;
 }
 
 void draw()
 {
     background(255);
-
-    drawScore();
-
     handleKeys();
-
-    t.edges();
-    t.update();
-    t.display();
+    updateTriangles();
+    drawScore();
 }
 
 void drawScore()
@@ -33,24 +28,35 @@ void drawScore()
     text("Score: " + score, 5, 20);
 }
 
+void updateTriangles()
+{
+    for (Triangle t : triangles) {
+        t.edges();
+        t.update();
+        t.display();
+    }
+}
+
 void keyReleased()
 {
     keyReleasedCode = keyCode;
 }
 
-Triangle generateTriangle()
+void generateTriangles()
 {
     String type = types[(int) random(types.length)];
     String pointing = directions[(int) random(directions.length)];
     String direction = directions[(int) random(directions.length)];
-    return new Triangle(width / 2, height / 2, type, pointing, direction);
+    for (int i = 0; i < triangles.length; i++) {
+        triangles[i] = new Triangle(random(0, width), random(0, height), type, pointing, direction);
+    }
 }
 
-void checkKey(Triangle t, String keyName)
+void checkKey(String keyName)
 {
-    if (t.type.equals("green") && t.pointing.equals(keyName)) {
+    if (triangles[0].type.equals("green") && triangles[0].pointing.equals(keyName)) {
         score++;
-    } else if (t.type.equals("orange") && t.direction.equals(keyName)) {
+    } else if (triangles[0].type.equals("orange") && triangles[0].direction.equals(keyName)) {
         score++;
     } else {
         score--;
@@ -60,17 +66,17 @@ void checkKey(Triangle t, String keyName)
 void handleKeys()
 {
     if (keyReleasedCode == UP) {
-        checkKey(t, "up");
-        t = generateTriangle();
+        checkKey("up");
+        generateTriangles();
     } else if (keyReleasedCode == DOWN) {
-        checkKey(t, "down");
-        t = generateTriangle();
+        checkKey("down");
+        generateTriangles();
     } else if (keyReleasedCode == LEFT) {
-        checkKey(t, "left");
-        t = generateTriangle();
+        checkKey("left");
+        generateTriangles();
     } else if (keyReleasedCode == RIGHT) {
-        checkKey(t, "right");
-        t = generateTriangle();
+        checkKey("right");
+        generateTriangles();
     }
     keyReleasedCode = 0;
 }
